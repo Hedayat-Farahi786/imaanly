@@ -4,7 +4,10 @@ import {
   CalendarIcon, 
   UtensilsIcon,
   PlaneIcon,
-  HeartIcon
+  HeartIcon,
+  ShieldIcon,
+  HandCoinsIcon,
+  HeartPulseIcon
 } from 'lucide-react';
 
 export const duaCategories = [
@@ -61,6 +64,13 @@ export const duaCategories = [
             translation: 'O Allah, I seek refuge in You from anxiety and sorrow',
             reference: 'Bukhari',
           },
+          {
+            id: 'anxiety-2',
+            arabic: 'رَبِّ اشْرَحْ لِي صَدْرِي',
+            transliteration: 'Rabbi ashrah li sadri',
+            translation: 'My Lord, open up my heart for me.',
+            reference: 'Quran 20:25',
+          },
         ],
       },
       {
@@ -74,9 +84,34 @@ export const duaCategories = [
             translation: 'Praise be to Allah by whose grace good deeds are completed',
             reference: 'Ibn Majah',
           },
+          {
+            id: 'happiness-2',
+            arabic: 'اللَّهُمَّ إِنِّي أَسْأَلُكَ رِضَاكَ وَالْجَنَّةَ',
+            transliteration: 'Allahumma inni as’aluka ridhaka wal-jannah',
+            translation: 'O Allah, I ask for Your pleasure and Paradise.',
+            reference: 'Muslim',
+          },
         ],
       },
     ],
+  },
+  {
+    id: 'protection',
+    name: 'Protection',
+    description: 'Duas for safety and protection',
+    icon: ShieldIcon,
+  },
+  {
+    id: 'repentance',
+    name: 'Repentance',
+    description: 'Duas for seeking forgiveness',
+    icon: HandCoinsIcon,
+  },
+  {
+    id: 'health',
+    name: 'Health & Healing',
+    description: 'Duas for health and recovery',
+    icon: HeartPulseIcon,
   },
 ];
 
@@ -101,5 +136,44 @@ export const popularDuas = [
     favorite: false,
     audio: 'https://audio.example.com/dua2.mp3',
   },
-  // Add more duas...
+  {
+    id: 'health',
+    arabic: 'اللَّهُمَّ اشْفِنِي وَاشْفِ مَرْضَى الْمُسْلِمِينَ',
+    transliteration: 'Allahumma ishfi wa ishfi mardal-muslimeen',
+    translation: 'O Allah, heal me and heal the sick among the Muslims.',
+    reference: 'Abu Dawud',
+    category: 'health',
+    favorite: false,
+    audio: 'https://audio.example.com/dua3.mp3',
+  },
+  {
+    id: 'thankfulness',
+    arabic: 'اللَّهُمَّ إِنِّي أَعُوذُ بِكَ أَنْ أَكُونَ مِنَ الْغَافِلِينَ',
+    transliteration: 'Allahumma inni a’udhu bika an akuna minal-ghafileen',
+    translation: 'O Allah, I seek refuge with You from being among the heedless.',
+    reference: 'Tirmidhi',
+    category: 'thankfulness',
+    favorite: false,
+    audio: 'https://audio.example.com/dua4.mp3',
+  },
+  {
+    id: 'anxiety',
+    arabic: 'حَسْبُنَا اللَّهُ وَنِعْمَ الْوَكِيلُ',
+    transliteration: 'Hasbunallahu wa ni’mal wakeel',
+    translation: 'Sufficient for us is Allah, and He is the best Disposer of affairs.',
+    reference: 'Quran 3:173',
+    category: 'anxiety',
+    favorite: false,
+    audio: 'https://audio.example.com/dua5.mp3',
+  },
+  {
+    id: 'knowledge',
+    arabic: 'رَبِّ زِدْنِي عِلْمًا',
+    transliteration: 'Rabbi zidni ilma',
+    translation: 'My Lord, increase me in knowledge.',
+    reference: 'Quran 20:114',
+    category: 'knowledge',
+    favorite: false,
+    audio: 'https://audio.example.com/dua6.mp3',
+  },
 ];

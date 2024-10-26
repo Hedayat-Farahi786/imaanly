@@ -32,6 +32,7 @@ import { useLocalStorage } from '@/hooks/use-local-storage';
 import { surahs } from '@/data/quran';
 import { cn } from '@/lib/utils';
 import QuranFlashcard from '@/components/quran/quran-flashcard';
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 
 interface Bookmark {
   id: string;
@@ -53,6 +54,8 @@ export default function QuranBookmarks() {
   const [bookmarks, setBookmarks] = useLocalStorage<Bookmark[]>('quran-bookmarks', []);
   const { toast } = useToast();
 
+  const [isFilterOpen, setIsFilterOpen] = useState(false);
+
   const filteredBookmarks = bookmarks.filter(bookmark => {
     const surah = surahs.find(s => s.id === bookmark.surahId);
     const matchesSearch = bookmark.note?.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -71,10 +74,10 @@ export default function QuranBookmarks() {
 
   if (bookmarks.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-[400px] space-y-4">
+      <div className="flex flex-col items-center justify-center min-h-[400px] space-y-4 p-4">
         <Bookmark className="h-12 w-12 text-muted-foreground" />
-        <h2 className="text-2xl font-semibold">No Bookmarked Verses</h2>
-        <p className="text-muted-foreground text-center max-w-md">
+        <h2 className="text-xl sm:text-2xl font-semibold text-center">No Bookmarked Verses</h2>
+        <p className="text-muted-foreground text-center max-w-md text-sm sm:text-base">
           Start bookmarking verses to save them for later reference and study.
         </p>
         <Button variant="outline" onClick={() => window.history.back()}>
@@ -84,21 +87,24 @@ export default function QuranBookmarks() {
     );
   }
 
+
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
+    <div className="container mx-auto space-y-6 px-4 py-6">
+      {/* Header Section */}
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Bookmarked Verses</h1>
-          <p className="text-muted-foreground">
+          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">Bookmarked Verses</h1>
+          <p className="text-sm sm:text-base text-muted-foreground">
             Your saved verses for reference and study
           </p>
         </div>
-        <div className="flex gap-2">
+        <div className="flex gap-2 w-full sm:w-auto">
           <Dialog open={showFlashcards} onOpenChange={setShowFlashcards}>
             <DialogTrigger asChild>
-              <Button variant="outline">
+              <Button variant="outline" className="flex-1 sm:flex-none">
                 <Repeat className="mr-2 h-4 w-4" />
-                Practice Mode
+                <span className="hidden sm:inline">Practice Mode</span>
+                <span className="sm:hidden">Practice</span>
               </Button>
             </DialogTrigger>
             <DialogContent className="sm:max-w-[600px]">
@@ -125,53 +131,106 @@ export default function QuranBookmarks() {
         </div>
       </div>
 
-      <div className="flex gap-4">
-        <div className="w-1/4">
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-lg">Filter</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="relative">
-                <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+      <div className="flex flex-col lg:flex-row gap-4">
+        {/* Mobile Filter Button */}
+        <div className="lg:hidden">
+          <Sheet open={isFilterOpen} onOpenChange={setIsFilterOpen}>
+            <SheetTrigger asChild>
+              <Button variant="outline" className="w-full">
+                <Search className="mr-2 h-4 w-4" />
+                Filter Bookmarks
+              </Button>
+            </SheetTrigger>
+            <SheetContent side="left">
+              <SheetHeader>
+                <SheetTitle>Filter Bookmarks</SheetTitle>
+              </SheetHeader>
+              <div className="mt-4 space-y-4">
                 <Input
                   placeholder="Search bookmarks..."
-                  className="pl-8"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
+                  className="w-full"
                 />
+                <div className="space-y-2">
+                  <Button
+                    variant={!selectedSurah ? "default" : "ghost"}
+                    className="w-full justify-start"
+                    onClick={() => {
+                      setSelectedSurah(null);
+                      setIsFilterOpen(false);
+                    }}
+                  >
+                    All Surahs
+                  </Button>
+                  {Array.from(new Set(bookmarks.map(b => b.surahId))).map((surahId) => {
+                    const surah = surahs.find(s => s.id === surahId);
+                    if (!surah) return null;
+                    return (
+                      <Button
+                        key={surahId}
+                        variant={selectedSurah === surahId ? "default" : "ghost"}
+                        className="w-full justify-start"
+                        onClick={() => {
+                          setSelectedSurah(surahId);
+                          setIsFilterOpen(false);
+                        }}
+                      >
+                        {surah.name}
+                      </Button>
+                    );
+                  })}
+                </div>
               </div>
-              <div className="space-y-2">
-                <Button
-                  variant={!selectedSurah ? "default" : "ghost"}
-                  className="w-full justify-start"
-                  onClick={() => setSelectedSurah(null)}
-                >
-                  All Surahs
-                </Button>
-                {Array.from(new Set(bookmarks.map(b => b.surahId))).map((surahId) => {
-                  const surah = surahs.find(s => s.id === surahId);
-                  if (!surah) return null;
-                  return (
-                    <Button
-                      key={surahId}
-                      variant={selectedSurah === surahId ? "default" : "ghost"}
-                      className="w-full justify-start"
-                      onClick={() => setSelectedSurah(surahId)}
-                    >
-                      {surah.name}
-                    </Button>
-                  );
-                })}
-              </div>
-            </CardContent>
-          </Card>
+            </SheetContent>
+          </Sheet>
         </div>
 
+        {/* Desktop Filter Sidebar */}
+        <Card className="hidden lg:block w-64 h-fit">
+          <CardHeader>
+            <CardTitle className="text-lg">Filter</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <Input
+              placeholder="Search bookmarks..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full"
+            />
+            <div className="space-y-2">
+              <Button
+                variant={!selectedSurah ? "default" : "ghost"}
+                className="w-full justify-start"
+                onClick={() => setSelectedSurah(null)}
+              >
+                All Surahs
+              </Button>
+              {Array.from(new Set(bookmarks.map(b => b.surahId))).map((surahId) => {
+                const surah = surahs.find(s => s.id === surahId);
+                if (!surah) return null;
+                return (
+                  <Button
+                    key={surahId}
+                    variant={selectedSurah === surahId ? "default" : "ghost"}
+                    className="w-full justify-start"
+                    onClick={() => setSelectedSurah(surahId)}
+                  >
+                    {surah.name}
+                  </Button>
+                );
+              })}
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Bookmarks Grid */}
         <div className="flex-1">
           <div className={cn(
             "grid gap-4",
-            viewMode === 'grid' ? 'grid-cols-2' : 'grid-cols-1'
+            viewMode === 'grid' 
+              ? 'grid-cols-1 sm:grid-cols-2 xl:grid-cols-3' 
+              : 'grid-cols-1'
           )}>
             {filteredBookmarks.map((bookmark) => {
               const surah = surahs.find(s => s.id === bookmark.surahId);
@@ -180,7 +239,7 @@ export default function QuranBookmarks() {
               return (
                 <Card key={bookmark.id}>
                   <CardContent className="p-4">
-                    <div className="flex justify-between items-start mb-4">
+                    <div className="flex flex-col sm:flex-row justify-between items-start gap-2 sm:gap-0 mb-4">
                       <div>
                         <h3 className="font-medium">
                           {surah.name} • Verse {bookmark.verseNumber}
@@ -201,7 +260,7 @@ export default function QuranBookmarks() {
 
                     <div className="space-y-3">
                       {bookmark.arabic && (
-                        <p className="text-xl text-right font-arabic leading-relaxed">
+                        <p className="text-lg sm:text-xl text-right font-arabic leading-relaxed">
                           {bookmark.arabic}
                         </p>
                       )}
@@ -226,15 +285,15 @@ export default function QuranBookmarks() {
                       )}
                     </div>
 
-                    <div className="flex justify-between items-center mt-4">
+                    <div className="flex flex-wrap justify-between items-center gap-2 mt-4">
                       <div className="flex gap-2">
-                        <Button variant="ghost" size="sm">
+                        <Button variant="ghost" size="sm" className="text-xs sm:text-sm">
                           <Volume2 className="mr-2 h-4 w-4" />
-                          Listen
+                          <span className="hidden sm:inline">Listen</span>
                         </Button>
-                        <Button variant="ghost" size="sm">
+                        <Button variant="ghost" size="sm" className="text-xs sm:text-sm">
                           <Share2 className="mr-2 h-4 w-4" />
-                          Share
+                          <span className="hidden sm:inline">Share</span>
                         </Button>
                       </div>
                     </div>

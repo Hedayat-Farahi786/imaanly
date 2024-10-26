@@ -124,7 +124,7 @@ export default function Prayers() {
               <PrayerTracker />
             </div>
 
-            <div className="space-y-4">
+            {/* <div className="space-y-4">
               <h2 className="text-xl font-semibold">Prayer Calendar</h2>
               <Card>
                 <CardHeader>
@@ -185,7 +185,7 @@ export default function Prayers() {
                   </div>
                 </CardContent>
               </Card>
-            </div>
+            </div> */}
           </div>
         </div>
 

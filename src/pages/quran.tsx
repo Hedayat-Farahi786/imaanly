@@ -135,39 +135,48 @@ export default function Quran() {
   };
 
   return (
-    <div className="space-y-8">
-      <div className="flex items-center justify-between">
+    <div className="container mx-auto space-y-8 px-4 py-6">
+      {/* Header Section */}
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Noble Quran</h1>
-          <p className="text-muted-foreground">
+          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">Noble Quran</h1>
+          <p className="text-sm sm:text-base text-muted-foreground">
             Read, listen, and understand the Holy Quran
           </p>
         </div>
-        <div className="flex gap-2">
-          <Button variant="outline" size="sm" onClick={() => {
-            const { surah, ayah } = readingProgress.lastRead;
-            setSelectedSurah(surah.toString());
-            setCurrentPage(Math.ceil(ayah / versesPerPage));
-          }}>
+        <div className="flex flex-wrap gap-2 w-full sm:w-auto">
+          <Button 
+            variant="outline" 
+            size="sm" 
+            className="flex-1 sm:flex-none"
+            onClick={() => {
+              const { surah, ayah } = readingProgress.lastRead;
+              setSelectedSurah(surah.toString());
+              setCurrentPage(Math.ceil(ayah / versesPerPage));
+            }}
+          >
             <Book className="mr-2 h-4 w-4" />
-            Last Read
+            <span className="hidden sm:inline">Last Read</span>
+            <span className="sm:hidden">Continue</span>
           </Button>
-          <Button variant="outline" size="sm" asChild>
+          <Button variant="outline" size="sm" asChild className="flex-1 sm:flex-none">
             <Link to="/quran/bookmarks">
               <Bookmark className="mr-2 h-4 w-4" />
-              Bookmarks ({bookmarks.length})
+              <span className="hidden sm:inline">Bookmarks</span>
+              <span className="sm:hidden">Bookmarks</span> ({bookmarks.length})
             </Link>
           </Button>
         </div>
       </div>
 
-      <div className="grid gap-4 md:grid-cols-3">
+      {/* Controls Section */}
+      <div className="grid gap-4 sm:gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
         <div className="flex gap-2">
           <Select value={selectedSurah} onValueChange={setSelectedSurah}>
-            <SelectTrigger>
+            <SelectTrigger className="w-full">
               <SelectValue placeholder="Select Surah" />
             </SelectTrigger>
-            <SelectContent>
+            <SelectContent className="max-h-[300px]">
               {surahs.map(surah => (
                 <SelectItem key={surah.id} value={surah.id.toString()}>
                   {surah.id}. {surah.name} ({surah.arabicName})
@@ -178,7 +187,7 @@ export default function Quran() {
         </div>
 
         <Select value={selectedTranslation} onValueChange={setSelectedTranslation}>
-          <SelectTrigger>
+          <SelectTrigger className="w-full">
             <Globe className="mr-2 h-4 w-4" />
             <SelectValue placeholder="Select Translation" />
           </SelectTrigger>
@@ -197,26 +206,31 @@ export default function Quran() {
             placeholder="Search in Quran..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="pl-8"
+            className="pl-8 w-full"
           />
         </div>
       </div>
 
+      {/* Tabs Section */}
       <Tabs defaultValue="read" className="space-y-4">
-        <TabsList>
-          <TabsTrigger value="read" className="gap-2">
-            <Book className="h-4 w-4" />
-            Read
-          </TabsTrigger>
-          <TabsTrigger value="listen" className="gap-2">
-            <PlayCircle className="h-4 w-4" />
-            Listen
-          </TabsTrigger>
-        </TabsList>
+        <div className="overflow-x-auto">
+          <TabsList className="inline-flex w-full sm:w-auto">
+            <TabsTrigger value="read" className="gap-2">
+              <Book className="h-4 w-4" />
+              <span className="hidden sm:inline">Read Quran</span>
+              <span className="sm:hidden">Read</span>
+            </TabsTrigger>
+            <TabsTrigger value="listen" className="gap-2">
+              <PlayCircle className="h-4 w-4" />
+              <span className="hidden sm:inline">Listen to Quran</span>
+              <span className="sm:hidden">Listen</span>
+            </TabsTrigger>
+          </TabsList>
+        </div>
 
         <TabsContent value="read" className="space-y-4">
           <Card>
-            <CardContent className="p-6">
+            <CardContent className="p-4 sm:p-6">
               <QuranReader
                 surahId={selectedSurah}
                 translationId={selectedTranslation}
@@ -228,7 +242,7 @@ export default function Quran() {
               />
 
               {totalPages > 1 && (
-                <div className="flex justify-center gap-2 mt-6">
+                <div className="flex justify-center items-center gap-2 mt-6">
                   <Button
                     variant="outline"
                     size="sm"
@@ -238,7 +252,7 @@ export default function Quran() {
                     <ChevronLeft className="h-4 w-4" />
                   </Button>
                   <span className="flex items-center gap-1 text-sm">
-                    Page {currentPage} of {totalPages}
+                    <span className="hidden sm:inline">Page</span> {currentPage}/{totalPages}
                   </span>
                   <Button
                     variant="outline"
@@ -256,7 +270,7 @@ export default function Quran() {
 
         <TabsContent value="listen">
           <Card>
-            <CardContent className="p-6">
+            <CardContent className="p-4 sm:p-6 space-y-4">
               <Select value={selectedReciter} onValueChange={setSelectedReciter}>
                 <SelectTrigger>
                   <SelectValue placeholder="Select Reciter" />
@@ -279,9 +293,10 @@ export default function Quran() {
         </TabsContent>
       </Tabs>
 
+      {/* Progress Section */}
       <section className="space-y-4">
-        <h2 className="text-xl font-semibold">Reading Progress</h2>
-        <div className="grid gap-4 md:grid-cols-2">
+        <h2 className="text-lg sm:text-xl font-semibold">Reading Progress</h2>
+        <div className="grid gap-4 grid-cols-1 sm:grid-cols-2">
           <Card>
             <CardContent className="p-4 space-y-2">
               <div className="flex justify-between text-sm">

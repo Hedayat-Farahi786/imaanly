@@ -151,30 +151,34 @@ export default function Dhikr() {
   };
 
   return (
-    <div className="space-y-8">
+    <div className="container mx-auto space-y-8 px-4 py-6">
       <section className="space-y-4">
-        <div className="flex items-center justify-between">
+        {/* Header Section - Made Responsive */}
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div>
-            <h1 className="text-3xl font-bold tracking-tight">Daily Dhikr</h1>
-            <p className="text-muted-foreground">
+            <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">Daily Dhikr</h1>
+            <p className="text-sm sm:text-base text-muted-foreground">
               Strengthen your connection with Allah through daily remembrance
             </p>
           </div>
-          <div className="flex gap-2">
-            <Button variant="outline" size="sm" asChild>
+          <div className="flex flex-wrap gap-2 w-full sm:w-auto">
+            <Button variant="outline" size="sm" asChild className="flex-1 sm:flex-none">
               <Link to="/dhikr/tasbih">
                 <Circle className="mr-2 h-4 w-4" />
-                Digital Tasbih
+                <span className="hidden sm:inline">Digital Tasbih</span>
+                <span className="sm:hidden">Tasbih</span>
               </Link>
             </Button>
+            
             <Dialog>
               <DialogTrigger asChild>
-                <Button variant="outline" size="sm">
+                <Button variant="outline" size="sm" className="flex-1 sm:flex-none">
                   <Plus className="mr-2 h-4 w-4" />
-                  Add Custom
+                  <span className="hidden sm:inline">Add Custom</span>
+                  <span className="sm:hidden">Add</span>
                 </Button>
               </DialogTrigger>
-              <DialogContent>
+              <DialogContent className="sm:max-w-[425px] p-4 sm:p-6">
                 <DialogHeader>
                   <DialogTitle>Add Custom Dhikr</DialogTitle>
                   <DialogDescription>
@@ -207,26 +211,27 @@ export default function Dhikr() {
                       required
                     />
                   </div>
-                  <Button type="submit">Add Dhikr</Button>
+                  <Button type="submit" className="w-full">Add Dhikr</Button>
                 </form>
               </DialogContent>
             </Dialog>
 
             <Dialog>
               <DialogTrigger asChild>
-                <Button variant="outline" size="sm">
+                <Button variant="outline" size="sm" className="flex-1 sm:flex-none">
                   <Timer className="mr-2 h-4 w-4" />
-                  Set Timer
+                  <span className="hidden sm:inline">Set Timer</span>
+                  <span className="sm:hidden">Timer</span>
                 </Button>
               </DialogTrigger>
-              <DialogContent>
+              <DialogContent className="sm:max-w-[425px]">
                 <DialogHeader>
                   <DialogTitle>Meditation Timer</DialogTitle>
                   <DialogDescription>
                     Set a timer for your dhikr session
                   </DialogDescription>
                 </DialogHeader>
-                <div className="flex gap-2">
+                <div className="grid grid-cols-3 sm:grid-cols-5 gap-2">
                   {[5, 10, 15, 20, 30].map((mins) => (
                     <Button
                       key={mins}
@@ -242,46 +247,31 @@ export default function Dhikr() {
           </div>
         </div>
 
+        {/* Timer Card - Made Responsive */}
         {timerActive && (
           <Card className="bg-primary/5">
             <CardContent className="p-4">
-              <div className="flex items-center justify-between">
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                 <div className="space-y-1">
                   <p className="text-sm font-medium">Meditation Timer</p>
-                  <p className="text-2xl font-bold">
-                    {formatTime(timeRemaining)}
-                  </p>
+                  <p className="text-2xl font-bold">{formatTime(timeRemaining)}</p>
                 </div>
-                <div className="flex gap-2">
-                  <Button
-                    variant="outline"
-                    size="icon"
-                    onClick={toggleMeditationAudio}
-                  >
-                    {isPlaying ? (
-                      <Pause className="h-4 w-4" />
-                    ) : (
-                      <Play className="h-4 w-4" />
-                    )}
+                <div className="flex gap-2 w-full sm:w-auto justify-end">
+                  <Button variant="outline" size="icon" onClick={toggleMeditationAudio}>
+                    {isPlaying ? <Pause className="h-4 w-4" /> : <Play className="h-4 w-4" />}
                   </Button>
-                  <Button
-                    variant="outline"
-                    size="icon"
-                    onClick={() => setTimerActive(false)}
-                  >
+                  <Button variant="outline" size="icon" onClick={() => setTimerActive(false)}>
                     <RotateCcw className="h-4 w-4" />
                   </Button>
                 </div>
               </div>
-              <Progress
-                value={(timeRemaining / timerDuration) * 100}
-                className="mt-4 h-2"
-              />
+              <Progress value={(timeRemaining / timerDuration) * 100} className="mt-4 h-2" />
             </CardContent>
           </Card>
         )}
 
-        <div className="grid gap-4 md:grid-cols-3">
+        {/* Category Cards - Made Responsive */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           <Card
             className={cn(
               "cursor-pointer transition-colors hover:bg-accent",
@@ -326,28 +316,25 @@ export default function Dhikr() {
         </div>
       </section>
 
+      {/* Dhikr Section - Made Responsive */}
       <section className="space-y-4">
         <div className="flex items-center justify-between">
           <h2 className="text-xl font-semibold">Current Session</h2>
-          <Button
-            variant="ghost"
-            size="sm"
-            className="gap-2"
-            onClick={resetCounts}
-          >
+          <Button variant="ghost" size="sm" className="gap-2" onClick={resetCounts}>
             <RotateCcw className="h-4 w-4" />
-            Reset All
+            <span className="hidden sm:inline">Reset All</span>
+            <span className="sm:hidden">Reset</span>
           </Button>
         </div>
 
-        <div className="grid gap-4 md:grid-cols-2">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {dhikrs
             .filter((dhikr) => dhikr.category === activeCategory)
             .map((dhikr) => (
               <Card key={dhikr.id} className="relative overflow-hidden">
                 <CardContent className="space-y-4 p-4">
                   <div className="space-y-2">
-                    <p className="text-2xl text-right font-arabic">
+                    <p className="text-xl sm:text-2xl text-right font-arabic leading-relaxed">
                       {dhikr.arabic}
                     </p>
                     <p className="text-sm text-muted-foreground">
@@ -355,16 +342,13 @@ export default function Dhikr() {
                     </p>
                   </div>
 
-                  <Progress
-                    value={(dhikr.count / dhikr.targetCount) * 100}
-                    className="h-2"
-                  />
+                  <Progress value={(dhikr.count / dhikr.targetCount) * 100} className="h-2" />
 
-                  <div className="flex items-center justify-between">
+                  <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
                     <span className="text-sm text-muted-foreground">
                       {dhikr.count} / {dhikr.targetCount}
                     </span>
-                    <div className="flex gap-2">
+                    <div className="flex gap-2 w-full sm:w-auto">
                       <Button
                         variant="outline"
                         size="icon"
@@ -378,7 +362,7 @@ export default function Dhikr() {
                       <Button
                         variant="outline"
                         size="lg"
-                        className="gap-2"
+                        className="gap-2 flex-1 sm:flex-none"
                         onClick={() => handleCount(dhikr.id)}
                         disabled={dhikr.count >= dhikr.targetCount}
                       >
@@ -390,7 +374,7 @@ export default function Dhikr() {
                 </CardContent>
                 {dhikr.count >= dhikr.targetCount && (
                   <div className="absolute inset-0 flex items-center justify-center bg-background/80 backdrop-blur-sm">
-                    <span className="text-xl font-semibold text-primary">
+                    <span className="text-lg sm:text-xl font-semibold text-primary">
                       Completed! ✨
                     </span>
                   </div>

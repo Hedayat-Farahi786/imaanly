@@ -1,13 +1,11 @@
-import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import DuaFlashcard from '@/components/dua-flashcard';
+import { useTheme } from '@/components/theme-provider';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import {
   Card,
   CardContent,
-  CardDescription,
   CardHeader,
-  CardTitle,
+  CardTitle
 } from '@/components/ui/card';
 import {
   Dialog,
@@ -17,29 +15,27 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
+import { duaCategories, popularDuas } from '@/data/duas';
+import { useLocalStorage } from '@/hooks/use-local-storage';
+import { useToast } from '@/hooks/use-toast';
+import { cn } from '@/lib/utils';
+import html2canvas from 'html2canvas';
 import {
+  Download,
+  DownloadIcon,
   Filter,
   Heart,
-  Search,
-  Star,
-  Clock,
-  MoreVertical,
-  Share2,
-  BookmarkPlus,
-  Repeat,
-  Volume2,
-  Download,
   Image as ImageIcon,
-  Copy,
-  X,
+  Repeat,
+  Search,
+  Share2,
+  Star,
+  Volume2
 } from 'lucide-react';
-import { useToast } from '@/hooks/use-toast';
-import DuaFlashcard from '@/components/dua-flashcard';
-import { cn } from '@/lib/utils';
-import { duaCategories, popularDuas } from '@/data/duas';
-import html2canvas from 'html2canvas';
-import { useTheme } from '@/components/theme-provider';
-import { useLocalStorage } from '@/hooks/use-local-storage';
+import { useState } from 'react';
+import { Link } from 'react-router-dom';
 
 export default function Duas() {
   const [searchQuery, setSearchQuery] = useState('');
@@ -49,7 +45,7 @@ export default function Duas() {
   const [favoriteDuas, setFavoriteDuas] = useLocalStorage<typeof popularDuas>('favorite-duas', []);
   const { toast } = useToast();
   const { theme } = useTheme();
-
+  const [isCategoryOpen, setIsCategoryOpen] = useState(false);
   const filteredDuas = duas.filter(dua => {
     const matchesSearch = dua.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
       dua.translation.toLowerCase().includes(searchQuery.toLowerCase());
@@ -119,20 +115,22 @@ export default function Duas() {
   };
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
+    <div className="container mx-auto space-y-6 px-4 py-6">
+      {/* Header Section - Made Responsive */}
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Du'a Collection</h1>
-          <p className="text-muted-foreground">
+          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">Du'a Collection</h1>
+          <p className="text-sm sm:text-base text-muted-foreground">
             Authentic supplications from the Quran and Sunnah
           </p>
         </div>
-        <div className="flex gap-2">
+        <div className="flex gap-2 w-full sm:w-auto">
           <Dialog open={showFlashcards} onOpenChange={setShowFlashcards}>
             <DialogTrigger asChild>
-              <Button variant="outline" size="sm">
+              <Button variant="outline" size="sm" className="flex-1 sm:flex-none">
                 <Repeat className="mr-2 h-4 w-4" />
-                Flashcards
+                <span className="hidden sm:inline">Flashcards</span>
+                <span className="sm:hidden">Flash Cards</span>
               </Button>
             </DialogTrigger>
             <DialogContent className="sm:max-w-[600px]">
@@ -145,17 +143,64 @@ export default function Duas() {
               <DuaFlashcard duas={filteredDuas} />
             </DialogContent>
           </Dialog>
-          <Button variant="outline" size="sm" asChild>
+          <Button variant="outline" size="sm" className="flex-1 sm:flex-none" asChild>
             <Link to="/duas/favorites">
               <Heart className="mr-2 h-4 w-4" />
-              Favorites ({favoriteDuas.length})
+              <span className="hidden sm:inline">Favorites</span>
+              <span className="sm:hidden">Favorites{' '}</span> ({favoriteDuas.length})
             </Link>
           </Button>
         </div>
       </div>
 
-      <div className="flex gap-4">
-        <div className="w-1/4">
+      {/* Main Content - Responsive Layout */}
+      <div className="flex flex-col lg:flex-row gap-4">
+        {/* Categories - Mobile Sheet / Desktop Sidebar */}
+        <div className="lg:hidden">
+          <Sheet open={isCategoryOpen} onOpenChange={setIsCategoryOpen}>
+            <SheetTrigger asChild>
+              <Button variant="outline" className="w-full">
+                <Filter className="mr-2 h-4 w-4" />
+                Categories
+              </Button>
+            </SheetTrigger>
+            <SheetContent side="left">
+              <SheetHeader>
+                <SheetTitle>Categories</SheetTitle>
+              </SheetHeader>
+              <div className="space-y-2 mt-4">
+                <Button
+                  variant={selectedCategory === 'all' ? "default" : "ghost"}
+                  className="w-full justify-start"
+                  onClick={() => {
+                    setSelectedCategory('all');
+                    setIsCategoryOpen(false);
+                  }}
+                >
+                  <Star className="mr-2 h-4 w-4" />
+                  All Du'as
+                </Button>
+                {duaCategories.map((category) => (
+                  <Button
+                    key={category.id}
+                    variant={selectedCategory === category.id ? "default" : "ghost"}
+                    className="w-full justify-start"
+                    onClick={() => {
+                      setSelectedCategory(category.id);
+                      setIsCategoryOpen(false);
+                    }}
+                  >
+                    <category.icon className="mr-2 h-4 w-4" />
+                    {category.name}
+                  </Button>
+                ))}
+              </div>
+            </SheetContent>
+          </Sheet>
+        </div>
+
+        {/* Desktop Categories */}
+        <div className="hidden lg:block w-64 flex-shrink-0">
           <Card>
             <CardHeader>
               <CardTitle className="text-lg">Categories</CardTitle>
@@ -184,6 +229,7 @@ export default function Duas() {
           </Card>
         </div>
 
+        {/* Duas Content */}
         <div className="flex-1 space-y-4">
           <div className="relative">
             <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
@@ -199,18 +245,18 @@ export default function Duas() {
             {filteredDuas.map((dua) => (
               <Card key={dua.id} className="relative" id={`dua-card-${dua.id}`}>
                 <CardContent className="p-4">
-                  <div className="flex justify-between items-start mb-4">
+                  <div className="flex flex-col sm:flex-row justify-between items-start gap-2 sm:gap-4 mb-4">
                     <div>
                       <h3 className="font-medium">{dua.title || 'Du\'a'}</h3>
                       <p className="text-sm text-muted-foreground">{dua.reference}</p>
                     </div>
-                    <div className="flex gap-2">
+                    <div className="flex gap-2 self-end sm:self-start">
                       <Button
                         variant="ghost"
                         size="icon"
                         onClick={() => saveDuaAsImage(dua.id)}
                       >
-                        <ImageIcon className="h-4 w-4" />
+                        <DownloadIcon className="h-4 w-4" />
                       </Button>
                       <Button
                         variant="ghost"
@@ -227,7 +273,7 @@ export default function Duas() {
                   </div>
 
                   <div className="space-y-3">
-                    <p className="text-xl text-right font-arabic leading-relaxed">
+                    <p className="text-lg sm:text-xl text-right font-arabic leading-relaxed">
                       {dua.arabic}
                     </p>
                     <p className="text-sm italic text-muted-foreground">
@@ -238,11 +284,11 @@ export default function Duas() {
                     </p>
                   </div>
 
-                  <div className="flex justify-between items-center mt-4">
-                    <div className="flex gap-2">
+                  <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 mt-4">
+                    <div className="flex flex-wrap gap-2">
                       <Button variant="ghost" size="sm">
                         <Volume2 className="mr-2 h-4 w-4" />
-                        Listen
+                        <span className="hidden sm:inline">Listen</span>
                       </Button>
                       <Button
                         variant="ghost"
@@ -250,11 +296,11 @@ export default function Duas() {
                         onClick={() => handleShare(dua)}
                       >
                         <Share2 className="mr-2 h-4 w-4" />
-                        Share
+                        <span className="hidden sm:inline">Share</span>
                       </Button>
                     </div>
                     <span className="text-sm text-muted-foreground">
-                      {duaCategories.find(cat => cat.id === dua.category)?.name}
+                      {duaCategories.find(cat => cat.id === dua.category)?.name ? 'For ' : ''}{duaCategories.find(cat => cat.id === dua.category)?.name}
                     </span>
                   </div>
                 </CardContent>

@@ -6,18 +6,19 @@ import MainNav from './main-nav';
 import MobileNav from './mobile-nav';
 import UserNav from './user-nav';
 import LanguageSwitcher from './language-switcher';
+import { Link } from 'react-router-dom';
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   const { theme, setTheme } = useTheme();
 
   return (
-    <div className="min-h-screen bg-background w-10/12 mx-auto">
+    <div className="min-h-screen bg-background">
       <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-        <div className="container flex h-14 max-w-screen-2xl items-center">
+        <div className="container flex h-14 w-11/12 mx-auto items-center">
           <div className="mr-4 hidden md:flex">
-            <a className="mr-6 flex items-center space-x-2" href="/">
-              <span className="font-bold sm:inline-block">Salaam</span>
-            </a>
+            <Link className="mr-6 flex items-center space-x-2" to="/">
+              <span className="font-bold sm:inline-block">Inaamly</span>
+            </Link>
             <MainNav />
           </div>
           <MobileNav />
@@ -36,11 +37,11 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           </div>
         </div>
       </header>
-      <main className="container max-w-screen-2xl py-6">
+      <main className="container w-11/12 py-10 mx-auto">
         {children}
       </main>
       <footer className="border-t">
-        <div className="container max-w-screen-2xl py-6">
+        <div className="container max-w-screen-2xl py-6 w-11/12 mx-auto">
           <div className="grid grid-cols-2 gap-8 md:grid-cols-4">
             <div className="space-y-3">
               <h4 className="text-sm font-medium">About</h4>
