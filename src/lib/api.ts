@@ -31,6 +31,8 @@ export const authService = {
     try {
       const { data } = await api.post('/auth/login', { email, password });
       localStorage.setItem('token', data.token);
+      // Set the Authorization header after successful login
+      api.defaults.headers.common['Authorization'] = `Bearer ${data.token}`;
       return data;
     } catch (error) {
       if (axios.isAxiosError(error)) {
@@ -44,6 +46,8 @@ export const authService = {
     try {
       const { data } = await api.post('/auth/register', userData);
       localStorage.setItem('token', data.token);
+      // Set the Authorization header after successful registration
+      api.defaults.headers.common['Authorization'] = `Bearer ${data.token}`;
       return data;
     } catch (error) {
       if (axios.isAxiosError(error)) {
@@ -55,11 +59,20 @@ export const authService = {
 
   logout: () => {
     localStorage.removeItem('token');
+    // Clear the Authorization header
+    delete api.defaults.headers.common['Authorization'];
     window.location.href = '/login';
   },
 
   getCurrentUser: async () => {
     try {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        throw new Error('No token found');
+      }
+      
+      // Ensure the token is set in headers before making the request
+      api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
       const { data } = await api.get('/auth/me');
       return data;
     } catch (error) {

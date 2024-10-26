@@ -10,12 +10,21 @@ import {
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useAuth } from '@/contexts/auth-context';
-import { Bell, Mail, Settings, LogOut } from 'lucide-react';
-import { Badge } from '@/components/ui/badge';
+import { Settings, LogOut } from 'lucide-react';
 
 export default function UserNav() {
-  const { user, logout } = useAuth();
+  const { user, loading, logout } = useAuth();
 
+  // Show loading state
+  if (loading) {
+    return (
+      <div className="flex items-center gap-4">
+        <div className="h-8 w-8 animate-pulse rounded-full bg-muted"></div>
+      </div>
+    );
+  }
+
+  // Show login/signup buttons if no user
   if (!user) {
     return (
       <div className="flex items-center gap-4">
@@ -29,58 +38,37 @@ export default function UserNav() {
     );
   }
 
+  // Show user menu if authenticated
   return (
     <div className="flex items-center gap-4">
-      <Button variant="ghost" size="icon" asChild>
-        <Link to="/messages">
-          <Mail className="h-5 w-5" />
-          <Badge className="absolute -top-1 -right-1 h-4 w-4 p-0 text-xs">3</Badge>
-        </Link>
-      </Button>
-
-      <Button variant="ghost" size="icon" asChild>
-        <Link to="/notifications">
-          <Bell className="h-5 w-5" />
-          <Badge className="absolute -top-1 -right-1 h-4 w-4 p-0 text-xs">5</Badge>
-        </Link>
-      </Button>
-
+      <div className="hidden md:block text-sm">
+        <span className="text-muted-foreground">Assalamu alaikum, </span>
+        <span className="font-medium text-foreground">{user.name}</span>
+      </div>
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button variant="ghost" className="relative h-8 w-8 rounded-full">
             <Avatar className="h-8 w-8">
-              <AvatarImage src={user.avatar} />
-              <AvatarFallback>{user.name[0]}</AvatarFallback>
+              <AvatarImage src={user.avatar} alt={user.name} />
+              <AvatarFallback>{user.name[0]?.toUpperCase() || '?'}</AvatarFallback>
             </Avatar>
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent className="w-56" align="end" forceMount>
           <DropdownMenuLabel className="font-normal">
             <div className="flex flex-col space-y-1">
-              <p className="text-sm font-medium leading-none">{user.name}</p>
+              <div className="flex items-center gap-1">
+                <p className="text-sm font-medium leading-none">{user.name}</p>
+                {/* <span className="text-xs text-muted-foreground">• </span> */}
+              </div>
               <p className="text-xs leading-none text-muted-foreground">
-                @{user.username}
+                {user.email}
               </p>
             </div>
           </DropdownMenuLabel>
           <DropdownMenuSeparator />
           <DropdownMenuItem asChild>
             <Link to="/profile" className="w-full cursor-pointer">
-              Profile
-            </Link>
-          </DropdownMenuItem>
-          <DropdownMenuItem asChild>
-            <Link to="/messages" className="w-full cursor-pointer">
-              Messages
-            </Link>
-          </DropdownMenuItem>
-          <DropdownMenuItem asChild>
-            <Link to="/notifications" className="w-full cursor-pointer">
-              Notifications
-            </Link>
-          </DropdownMenuItem>
-          <DropdownMenuItem asChild>
-            <Link to="/settings" className="w-full cursor-pointer">
               <Settings className="mr-2 h-4 w-4" />
               Settings
             </Link>

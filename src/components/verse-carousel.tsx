@@ -60,7 +60,7 @@ export default function VerseCarousel() {
 
   return (
     <Card className="relative overflow-hidden bg-gradient-to-r from-primary/5 to-primary/10">
-      <CardContent className="p-6">
+      <CardContent className="p-6 px-32">
         <div className="absolute top-4 right-4 flex gap-2">
           <Button
             variant="ghost"

@@ -4,7 +4,6 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { authService } from '@/lib/api';
 import { useAuth } from '@/contexts/auth-context';
 import { toast } from 'sonner';
 
@@ -18,13 +17,14 @@ export default function Login() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-
     try {
-      await authService.login(email, password);
-      toast.success('Successfully logged in');
+      // Use the login function from useAuth instead of authService directly
+      await login(email, password);
+      // Don't need toast here as it's handled in auth context
       navigate('/');
     } catch (error) {
-      toast.error('Failed to log in. Please check your credentials.');
+      console.error('Login error:', error);
+      // Don't need toast here as it's handled in auth context
     } finally {
       setLoading(false);
     }
